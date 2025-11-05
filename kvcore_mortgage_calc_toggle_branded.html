@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Move-Up Mortgage Calculator • Jason Kaczmarski Team</title>
+<style>
+  :root{
+    --radius:14px;
+    --shadow:0 6px 28px rgba(0,0,0,.08);
+    --gap:14px;
+    --font:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    --brand-blue:#1e3a8a;
+    --brand-red:#d92c2c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:18px;font-family:var(--font);background:#f7f7f8;color:#111}
+  .wrap{max-width:980px;margin:0 auto}
+  .card{background:white;border-radius:var(--radius);box-shadow:var(--shadow);padding:clamp(14px,2vw,22px)}
+  .header-logos{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+  .header-logos img{max-height:70px;object-fit:contain}
+  .header-logos .team{max-height:65px}
+  .header-logos .remax{max-height:80px}
+  .heading{text-align:center;margin-bottom:6px}
+  h1{font-size:1.35rem;margin:0;color:var(--brand-blue)}
+  .mode-desc{text-align:center;margin:8px 0 16px;font-size:.95rem;color:#444}
+  .tabs{display:flex;background:#f0f3ff;border-radius:12px;padding:4px;gap:6px;margin-bottom:12px;flex-wrap:wrap;justify-content:center}
+  .tab{padding:8px 14px;border-radius:10px;cursor:pointer;user-select:none;font-weight:600;color:var(--brand-blue)}
+  .tab.active{background:white;box-shadow:0 1px 0 1px rgba(0,0,0,.04);color:var(--brand-red)}
+  label{font-size:.9rem;color:#333;display:block;margin-bottom:6px}
+  input,select{width:100%;padding:12px 12px;border:1px solid #e6e6ea;border-radius:10px;font-size:1rem;background:#fff;}
+  input:focus,select:focus{outline:none;border-color:var(--brand-blue);box-shadow:0 0 0 3px rgba(30,58,138,.15)}
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gap)}
+  .col-3{grid-column:span 3}.col-4{grid-column:span 4}.col-6{grid-column:span 6}.col-8{grid-column:span 8}.col-12{grid-column:span 12}
+  @media(max-width:860px){.col-3,.col-4,.col-6,.col-8{grid-column:span 12}}
+  .eq-box{background:#fff;border:1px dashed #ddd;border-radius:12px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .eq-item{display:flex;gap:6px;align-items:baseline;font-size:.96rem}.eq-item b{font-size:1rem}
+  .totals{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gap);margin-top:8px}
+  .total-card{grid-column:span 6;background:#fafafa;border:1px solid #eee;border-radius:12px;padding:12px}
+  @media(max-width:760px){.total-card{grid-column:span 12}}
+  .total-card h2{margin:0 0 4px;font-size:1.1rem;color:var(--brand-blue)}
+  .chip{grid-column:span 6;display:flex;justify-content:space-between;background:#fff;border:1px solid #eee;border-radius:10px;padding:10px 12px;font-size:.96rem}
+  @media(max-width:760px){.chip{grid-column:span 12}}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:center}
+  button{border:0;border-radius:10px;padding:10px 14px;font-size:.95rem;cursor:pointer}
+  .primary{background:var(--brand-blue);color:white}
+  .ghost{background:#efeffe;color:#30237a}
+  .foot{margin-top:16px;color:#666;font-size:.85rem;text-align:center;border-top:1px solid #eee;padding-top:10px}
+  .hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="header-logos">
+      <a href="https://the-jason-kaczmarski-team-springfield-tn.remax.com/" target="_blank"><img src="The%20jason%20kaczmarski%20team.png" alt="The Jason Kaczmarski Team" class="team"></a>
+      <a href="https://the-jason-kaczmarski-team-springfield-tn.remax.com/" target="_blank"><img src="photo_display.cfm-2.jpeg" alt="RE/MAX Balloon" class="remax"></a>
+    </div>
+    <div class="heading"><h1>Move-Up Mortgage Calculator</h1></div>
+    <div class="mode-desc" id="modeDesc">Estimate your next home’s payment using your current equity.</div>
+
+    <div class="tabs">
+      <div class="tab active" id="tab-sell" data-mode="sell">Sell & Use Equity</div>
+      <div class="tab" id="tab-rental" data-mode="rental">Keep Current Home as Rental</div>
+    </div>
+
+    <iframe src="kvcore_mortgage_calc_toggle.html" style="border:0;width:100%;height:750px"></iframe>
+
+    <div class="foot">
+      © 2025 The Jason Kaczmarski Team | RE/MAX 1st Choice | TN Licensed Broker. <br>
+      Estimates only. Not a commitment to lend. <br>
+      <a href="https://the-jason-kaczmarski-team-springfield-tn.remax.com/" target="_blank">the-jason-kaczmarski-team-springfield-tn.remax.com</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>
