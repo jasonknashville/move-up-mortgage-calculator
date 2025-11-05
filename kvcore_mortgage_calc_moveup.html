@@ -10,26 +10,216 @@
   body{margin:0; padding:18px; font-family:var(--font); background:#f7f7f8; color:#111}
   .wrap{max-width:980px; margin:0 auto}
   .card{background:white; border-radius:var(--radius); box-shadow:var(--shadow); padding:clamp(14px,2vw,22px)}
+  .grid{display:grid; grid-template-columns:repeat(12,1fr); gap:var(--gap)}
+  .col-3{grid-column:span 3}
+  .col-4{grid-column:span 4}
+  .col-6{grid-column:span 6}
+  .col-8{grid-column:span 8}
+  .col-12{grid-column:span 12}
+  @media (max-width: 860px){ .col-3,.col-4,.col-6,.col-8{grid-column:span 12} }
   label{font-size:.9rem; color:#333; display:block; margin-bottom:6px}
   input, select{width:100%; padding:12px 12px; border:1px solid #e6e6ea; border-radius:10px; font-size:1rem; background:#fff;}
   input:focus, select:focus{outline:none; border-color:#8b5cf6; box-shadow:0 0 0 3px rgba(139,92,246,.15)}
+  .heading{display:flex; align-items:baseline; justify-content:space-between; margin:4px 0 14px}
+  .heading h1{font-size:1.25rem; margin:0}
+  .muted{color:#666; font-size:.95rem}
+  .pill{display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:999px; background:#f4f3ff; color:#4c1d95; font-weight:600; font-size:.95rem}
   .section-title{margin:18px 0 6px; font-weight:800; font-size:1.05rem; color:#222}
+  .totals{display:grid; grid-template-columns:repeat(12,1fr); gap:var(--gap); margin-top:8px}
+  .total-card{grid-column:span 6; background:#fafafa; border:1px solid #eee; border-radius:12px; padding:12px}
+  @media (max-width: 760px){ .total-card{grid-column:span 12} }
+  .breakdown{display:grid; grid-template-columns:repeat(12,1fr); gap:8px; margin-top:6px}
+  .chip{grid-column:span 6; display:flex; justify-content:space-between; background:#fff; border:1px solid #eee; border-radius:10px; padding:10px 12px; font-size:.96rem}
+  @media (max-width: 760px){ .chip{grid-column:span 12} }
+  .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+  button{border:0; border-radius:10px; padding:10px 14px; font-size:.95rem; cursor:pointer}
+  .primary{background:#4f46e5; color:white}
+  .ghost{background:#efeffe; color:#30237a}
+  .foot{margin-top:14px; color:#666; font-size:.85rem}
+  .eq-box{background:#fff; border:1px dashed #ddd; border-radius:12px; padding:10px 12px; display:flex; flex-wrap:wrap; gap:12px; align-items:center}
+  .eq-item{display:flex; gap:6px; align-items:baseline; font-size:.96rem}
+  .eq-item b{font-size:1rem}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="card">
-    <h1>Move-Up Mortgage Calculator</h1>
-    <p>Updated defaults for price, rate, and tax.</p>
-    <div>
-      <label>Purchase Price</label>
-      <input id="price" type="number" value="525000">
-      <label>Interest Rate</label>
-      <input id="rate" type="number" value="6.25">
-      <label>Property Tax %</label>
-      <input id="taxPct" type="number" value="0.5">
+    <div class="heading">
+      <h1>Move-Up Mortgage Calculator</h1>
+      <span class="pill">Equity-aware • Embeddable</span>
+    </div>
+
+    <div class="section-title">New Home</div>
+    <div class="grid">
+      <div class="col-6 stack">
+        <label for="price">Target Purchase Price ($)</label>
+        <input id="price" type="number" inputmode="decimal" value="525000" min="0" step="1000" />
+      </div>
+      <div class="col-3 stack">
+        <label for="rate">Interest Rate (APR %)</label>
+        <input id="rate" type="number" inputmode="decimal" value="6.25" min="0" step="0.01" />
+      </div>
+      <div class="col-3 stack">
+        <label for="term">Loan Term (years)</label>
+        <select id="term">
+          <option>30</option>
+          <option>20</option>
+          <option>15</option>
+          <option>10</option>
+        </select>
+      </div>
+      <div class="col-4 stack">
+        <label for="taxPct">Property Tax (% of value / yr)</label>
+        <input id="taxPct" type="number" inputmode="decimal" value="0.5" min="0" step="0.01" />
+      </div>
+      <div class="col-4 stack">
+        <label for="insAnnual">Home Insurance (annual $)</label>
+        <input id="insAnnual" type="number" inputmode="decimal" value="1500" min="0" step="50" />
+      </div>
+      <div class="col-4 stack">
+        <label for="hoa">HOA (monthly $)</label>
+        <input id="hoa" type="number" inputmode="decimal" value="0" min="0" step="5" />
+      </div>
+      <div class="col-4 stack">
+        <label for="pmiPct">PMI (% of loan / yr, if LTV&gt;80%)</label>
+        <input id="pmiPct" type="number" inputmode="decimal" value="0.5" min="0" step="0.05" />
+      </div>
+    </div>
+
+    <div class="section-title">Your Current Home (for down payment)</div>
+    <div class="grid">
+      <div class="col-4 stack">
+        <label for="currValue">Est. Sale Price ($)</label>
+        <input id="currValue" type="number" inputmode="decimal" value="450000" min="0" step="1000" />
+      </div>
+      <div class="col-4 stack">
+        <label for="currBalance">Current Mortgage Balance ($)</label>
+        <input id="currBalance" type="number" inputmode="decimal" value="325000" min="0" step="1000" />
+      </div>
+      <div class="col-4 stack">
+        <label for="addCash">Additional Down Payment ($)</label>
+        <input id="addCash" type="number" inputmode="decimal" value="0" min="0" step="500" />
+      </div>
+      <div class="col-12 eq-box" id="eqBox">
+        <div class="eq-item">Estimated Equity: <b id="eqVal">$0</b></div>
+        <div class="eq-item">Additional Cash: <b id="cashVal">$0</b></div>
+        <div class="eq-item">Applied Down Payment: <b id="appliedDown">$0</b></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="calcBtn">Calculate</button>
+      <button class="ghost" id="copyLink">Copy sharable link</button>
+      <button class="ghost" id="copyEmbed">Copy &lt;iframe&gt; embed</button>
+    </div>
+
+    <div class="totals">
+      <div class="total-card">
+        <h2>Monthly Payment</h2>
+        <div class="muted">All-in (P&I + taxes + insurance + PMI + HOA)</div>
+        <div style="font-size:2rem; font-weight:800; margin-top:6px" id="monthly">$0</div>
+      </div>
+      <div class="total-card">
+        <h2>Loan Details</h2>
+        <div class="small" id="loanDetails">—</div>
+      </div>
+    </div>
+
+    <div class="breakdown" id="breakdown"></div>
+
+    <div class="foot">
+      Estimates only. Not a commitment to lend. Consult your lender for exact figures.
     </div>
   </div>
 </div>
+
+<script>
+function fmt(n){return n.toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0})}
+function chip(label, value){
+  const div = document.createElement('div');
+  div.className = 'chip';
+  div.innerHTML = `<span>${label}</span><strong>${fmt(value)}</strong>`;
+  return div;
+}
+function monthlyPI(loan, annualRatePct, years){
+  const r = annualRatePct/100/12;
+  const n = years*12;
+  if(r === 0) return loan/n;
+  return loan * (r*Math.pow(1+r,n)) / (Math.pow(1+r,n)-1);
+}
+function num(id){ return parseFloat(document.getElementById(id).value || 0); }
+function paramsFromState(ids){
+  const q = new URLSearchParams();
+  ids.forEach(id => q.set(id, String(document.getElementById(id).value)));
+  return q.toString();
+}
+function applyStateFromParams(ids){
+  const url = new URL(window.location.href);
+  const q = url.searchParams;
+  let changed = false;
+  ids.forEach(id => { if(q.has(id)){ document.getElementById(id).value = q.get(id); changed = true; } });
+  return changed;
+}
+function compute(){
+  const ids = ['price','rate','term','taxPct','insAnnual','hoa','pmiPct','currValue','currBalance','addCash'];
+  const price = num('price');
+  const rate = num('rate');
+  const term = parseInt(document.getElementById('term').value || 30, 10);
+  const taxPct = num('taxPct');
+  const insAnnual = num('insAnnual');
+  const hoa = num('hoa');
+  const pmiPct = num('pmiPct');
+  const currValue = num('currValue');
+  const currBalance = num('currBalance');
+  const addCash = num('addCash');
+  const equity = Math.max(0, currValue - currBalance);
+  let down = equity + addCash;
+  down = Math.min(down, price);
+  const loan = Math.max(price - down, 0);
+  const ltv = loan / Math.max(price,1);
+  document.getElementById('eqVal').textContent = fmt(equity);
+  document.getElementById('cashVal').textContent = fmt(addCash);
+  document.getElementById('appliedDown').textContent = fmt(down);
+  const pi = monthlyPI(loan, rate, term);
+  const taxes = (price * (taxPct/100)) / 12;
+  const insurance = insAnnual / 12;
+  const pmiMonthly = (ltv > 0.80 ? (loan * (pmiPct/100))/12 : 0);
+  const monthlyAllIn = pi + taxes + insurance + pmiMonthly + hoa;
+  document.getElementById('monthly').textContent = fmt(monthlyAllIn);
+  const bd = document.getElementById('breakdown');
+  bd.innerHTML = '';
+  bd.appendChild(chip('Principal & Interest', pi));
+  bd.appendChild(chip('Property Taxes', taxes));
+  bd.appendChild(chip('Home Insurance', insurance));
+  if(pmiMonthly>0) bd.appendChild(chip('PMI (until 80% LTV)', pmiMonthly));
+  if(hoa>0) bd.appendChild(chip('HOA', hoa));
+  const loanDetails = document.getElementById('loanDetails');
+  loanDetails.innerHTML = `
+    Price: <strong>${fmt(price)}</strong> • Down: <strong>${fmt(down)}</strong><br>
+    Loan: <strong>${fmt(loan)}</strong> • Rate: <strong>${rate.toFixed(2)}%</strong> • Term: <strong>${term} yrs</strong><br>
+    LTV: <strong>${(ltv*100).toFixed(1)}%</strong>${ltv>0.80?' • PMI applies':''}
+  `;
+}
+(function init(){
+  const allIds = ['price','rate','term','taxPct','insAnnual','hoa','pmiPct','currValue','currBalance','addCash'];
+  document.getElementById('calcBtn').addEventListener('click', compute);
+  allIds.forEach(id=> document.getElementById(id).addEventListener('input', compute));
+  document.getElementById('copyLink').addEventListener('click', async () => {
+    const base = location.href.split('?')[0];
+    const q = paramsFromState(allIds);
+    const link = base + '?' + q;
+    try{ await navigator.clipboard.writeText(link); alert('Sharable link copied!'); }catch(e){ prompt('Copy this link:', link); }
+  });
+  document.getElementById('copyEmbed').addEventListener('click', async () => {
+    const base = location.href.split('?')[0];
+    const q = paramsFromState(allIds);
+    const src = base + '?' + q;
+    const code = `<iframe src="${src}" width="100%" height="620" style="border:0;max-width:980px" loading="lazy"></iframe>`;
+    try{ await navigator.clipboard.writeText(code); alert('<iframe> embed code copied!'); }catch(e){ prompt('Copy this embed code:', code); }
+  });
+  if(applyStateFromParams(allIds)){}
+  compute();
+})();
+</script>
 </body>
 </html>
