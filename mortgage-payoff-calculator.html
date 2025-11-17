@@ -123,6 +123,12 @@
         </div>
 
         <div class="mpc-field">
+          <label for="mpc-current-balance">Current Balance ($) – optional</label>
+          <input type="number" id="mpc-current-balance" placeholder="e.g. 87000" min="0" step="1000" />
+          <small>If you know your current balance, enter it for more accurate payoff timing.</small>
+        </div>
+
+        <div class="mpc-field">
           <label for="mpc-orig-rate">Interest Rate (APR %)</label>
           <input type="number" id="mpc-orig-rate" placeholder="4.25" step="0.01" />
         </div>
@@ -214,133 +220,4 @@
       const factorN = Math.pow(1 + r, n);
       const factorK = Math.pow(1 + r, k);
       const balance = P * (factorN - factorK) / (factorN - 1);
-      return Math.max(0, balance);
-    }
-
-    function mpcMonthsToPayoff(balance, annualRate, monthlyPayment) {
-      const B = balance;
-      const Pmt = monthlyPayment;
-      if (B <= 0 || Pmt <= 0) return 0;
-
-      if (annualRate === 0) {
-        return B / Pmt;
-      }
-
-      const r = annualRate / 12;
-      if (Pmt <= B * r) {
-        return Infinity;
-      }
-
-      const numerator = Math.log(Pmt / (Pmt - B * r));
-      const denominator = Math.log(1 + r);
-      return numerator / denominator;
-    }
-
-    // ---------- Version A logic ----------
-    function mpcResetOriginal() {
-      ['mpc-orig-purchase-price', 'mpc-orig-loan-amount', 'mpc-orig-rate',
-       'mpc-orig-term', 'mpc-orig-date', 'mpc-orig-extra'].forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        if (el.type === 'date') el.value = '';
-        else if (id === 'mpc-orig-term') el.value = 30;
-        else el.value = '';
-      });
-      document.getElementById('mpc-orig-error').textContent = '';
-      document.getElementById('mpc-orig-results').style.display = 'none';
-    }
-
-    function mpcCalculateOriginal() {
-      const errEl = document.getElementById('mpc-orig-error');
-      const resEl = document.getElementById('mpc-orig-results');
-      errEl.textContent = '';
-      resEl.style.display = 'none';
-      resEl.innerHTML = '';
-
-      const purchasePrice = Number(document.getElementById('mpc-orig-purchase-price').value);
-      const loanAmountInput = Number(document.getElementById('mpc-orig-loan-amount').value);
-      const ratePct = Number(document.getElementById('mpc-orig-rate').value);
-      const termYears = Number(document.getElementById('mpc-orig-term').value);
-      const dateStr = document.getElementById('mpc-orig-date').value;
-      const extra = Number(document.getElementById('mpc-orig-extra').value || 0);
-
-      if (!purchasePrice && !loanAmountInput) {
-        errEl.textContent = 'Please enter at least the original purchase price or original loan amount.';
-        return;
-      }
-      if (!ratePct || ratePct <= 0) {
-        errEl.textContent = 'Please enter a valid interest rate.';
-        return;
-      }
-      if (!termYears || termYears <= 0) {
-        errEl.textContent = 'Please enter a valid loan term in years.';
-        return;
-      }
-      if (!dateStr) {
-        errEl.textContent = 'Please enter your purchase / loan start date.';
-        return;
-      }
-
-      const P = loanAmountInput > 0 ? loanAmountInput : purchasePrice;
-      const annualRate = ratePct / 100;
-      const nTotal = termYears * 12;
-
-      const startDate = new Date(dateStr + 'T00:00:00');
-      const today = new Date();
-      let monthsElapsed = mpcDiffInMonths(startDate, today);
-      if (monthsElapsed < 0) monthsElapsed = 0;
-      if (monthsElapsed > nTotal) monthsElapsed = nTotal;
-
-      const monthlyPmt = mpcMonthlyPayment(P, annualRate, termYears);
-      const remainingBalance = mpcBalanceAfter(P, annualRate, termYears, monthsElapsed);
-
-      let baselineMonthsRemaining = mpcMonthsToPayoff(remainingBalance, annualRate, monthlyPmt);
-      if (!isFinite(baselineMonthsRemaining)) {
-        errEl.textContent = 'Based on these inputs, the regular payment is too low to pay off the loan.';
-        return;
-      }
-      const baselineMonthsRounded = Math.round(baselineMonthsRemaining);
-      const baselinePayoffDateFromToday = mpcAddMonths(today, baselineMonthsRounded);
-
-      const originalScheduledPayoffDate = mpcAddMonths(startDate, nTotal);
-
-      let html = '<h4>Results</h4>';
-      html += `<p><strong>Original loan amount:</strong> ${mpcFormatCurrency(P, 0)}</p>`;
-      html += `<p><strong>Monthly principal &amp; interest (P&amp;I):</strong> ${mpcFormatCurrency(monthlyPmt)}</p>`;
-      html += `<p><strong>Estimated remaining balance today:</strong> ${mpcFormatCurrency(remainingBalance, 0)}</p>`;
-      html += `<p><strong>Scheduled payoff date (based on full term):</strong> ${mpcFormatDate(originalScheduledPayoffDate)}</p>`;
-      html += `<p><strong>Estimated payoff date from today (no extra):</strong> ${mpcFormatDate(baselinePayoffDateFromToday)}</p>`;
-
-      if (extra > 0) {
-        const newMonthlyPmt = monthlyPmt + extra;
-        let newMonthsRem = mpcMonthsToPayoff(remainingBalance, annualRate, newMonthlyPmt);
-        if (!isFinite(newMonthsRem)) {
-          html += `<p style="color:#b00020;"><strong>Note:</strong> The extra payment entered is not enough to change the payoff date based on these numbers.</p>`;
-        } else {
-          const newMonthsRounded = Math.round(newMonthsRem);
-          const newPayoffDate = mpcAddMonths(today, newMonthsRounded);
-          const monthsSaved = Math.max(0, baselineMonthsRounded - newMonthsRounded);
-          const yearsSaved = monthsSaved / 12;
-
-          html += `<p><strong>New payoff date with extra ${mpcFormatCurrency(extra)} / month:</strong> ${mpcFormatDate(newPayoffDate)}</p>`;
-          if (monthsSaved > 0) {
-            html += `<p>You would pay off the mortgage approximately <strong>${monthsSaved}</strong> months sooner (~<strong>${yearsSaved.toFixed(1)}</strong> years) by making this extra payment.</p>`;
-          }
-        }
-      } else {
-        html += `<p><em>Add an extra monthly principal amount above to see how much sooner you might pay off the loan.</em></p>`;
-      }
-
-      resEl.innerHTML = html;
-      resEl.style.display = 'block';
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-      const calcBtn = document.getElementById('mpc-calc-btn');
-      const resetBtn = document.getElementById('mpc-reset-btn');
-      if (calcBtn) calcBtn.addEventListener('click', mpcCalculateOriginal);
-      if (resetBtn) resetBtn.addEventListener('click', mpcResetOriginal);
-    });
-  </script>
-</body>
-</html>
+      retur
