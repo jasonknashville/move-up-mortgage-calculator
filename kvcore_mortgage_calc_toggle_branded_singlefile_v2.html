@@ -2,296 +2,201 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Move-Up Mortgage Calculator • Jason Kaczmarski Team</title>
+<title>Move-Up Mortgage Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-  :root{
-    --radius:14px; --shadow:0 6px 28px rgba(0,0,0,.08); --gap:14px;
-    --font:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-    --brand-blue:#1e3a8a; --brand-red:#d92c2c;
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0; padding: 0;
+    background: #f7f7f7;
   }
-  *{box-sizing:border-box}
-  body{margin:0;padding:18px;font-family:var(--font);background:#f7f7f8;color:#111}
-  .wrap{max-width:980px;margin:0 auto}
-  .card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:clamp(14px,2vw,22px)}
-  .header-logos{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:12px;flex-wrap:wrap}
-  .header-logos img{object-fit:contain;display:block}
-  .team{height:64px}
-  .remax{height:76px}
-  h1{font-size:1.35rem;margin:6px 0 8px;color:var(--brand-blue);text-align:center}
-  .mode-desc{text-align:center;margin:6px 0 12px;font-size:.95rem;color:#444}
-  .tabs{display:flex;background:#f0f3ff;border-radius:12px;padding:4px;gap:6px;margin-bottom:12px;flex-wrap:wrap;justify-content:center}
-  .tab{padding:8px 14px;border-radius:10px;cursor:pointer;user-select:none;font-weight:600;color:var(--brand-blue)}
-  .tab.active{background:white;box-shadow:0 1px 0 1px rgba(0,0,0,.04);color:var(--brand-red)}
-  label{font-size:.9rem;color:#333;display:block;margin-bottom:6px}
-  input,select{width:100%;padding:12px 12px;border:1px solid #e6e6ea;border-radius:10px;font-size:1rem;background:#fff;}
-  input:focus,select:focus{outline:none;border-color:var(--brand-blue);box-shadow:0 0 0 3px rgba(30,58,138,.15)}
-  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gap)}
-  .col-3{grid-column:span 3} .col-4{grid-column:span 4} .col-6{grid-column:span 6} .col-8{grid-column:span 8} .col-12{grid-column:span 12}
-  @media(max-width:860px){.col-3,.col-4,.col-6,.col-8{grid-column:span 12} .team{height:52px} .remax{height:64px}}
-  .eq-box{background:#fff;border:1px dashed #ddd;border-radius:12px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
-  .eq-item{display:flex;gap:6px;align-items:baseline;font-size:.96rem} .eq-item b{font-size:1rem}
-  .totals{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gap);margin-top:8px}
-  .total-card{grid-column:span 6;background:#fafafa;border:1px solid #eee;border-radius:12px;padding:12px}
-  @media(max-width:760px){.total-card{grid-column:span 12}}
-  .total-card h2{margin:0 0 4px;font-size:1.1rem;color:var(--brand-blue)}
-  .breakdown{display:grid;grid-template-columns:repeat(12,1fr);gap:8px;margin-top:6px}
-  .chip{grid-column:span 6;display:flex;justify-content:space-between;background:#fff;border:1px solid #eee;border-radius:10px;padding:10px 12px;font-size:.96rem}
-  @media(max-width:760px){.chip{grid-column:span 12}}
-  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:center}
-  button{border:0;border-radius:10px;padding:10px 14px;font-size:.95rem;cursor:pointer}
-  .primary{background:var(--brand-blue);color:white}
-  .ghost{background:#efeffe;color:#30237a}
-  .foot{margin-top:16px;color:#666;font-size:.85rem;text-align:center;border-top:1px solid #eee;padding-top:10px}
-  .hide{display:none!important}
-  .hint{font-size:.8rem;color:#666;margin-left:6px}
+  .container {
+    max-width: 900px; margin: 20px auto;
+    background: #fff; padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .toggle-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+  .toggle-buttons button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #fff;
+  }
+  .toggle-buttons button.active {
+    background: #0077cc;
+    color: #fff;
+    border-color: #0077cc;
+  }
+  .section {
+    display: none;
+  }
+  .section.active {
+    display: block;
+  }
+  label { font-weight: bold; display: block; margin-top: 15px; }
+  input {
+    width: 100%; padding: 10px; margin-top: 5px;
+    font-size: 16px; border-radius: 6px; border: 1px solid #ccc;
+  }
+  .results {
+    background: #eef5ff;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 8px;
+  }
+  footer {
+    text-align: center;
+    margin-top: 25px;
+    color: #777;
+    font-size: 14px;
+  }
 </style>
 </head>
+
 <body>
-<div class="wrap">
-  <div class="card">
-    <div class="header-logos">
-      <a href="https://the-jason-kaczmarski-team-springfield-tn.remax.com/" target="_blank" rel="noopener">
-        <img src="https://raw.githubusercontent.com/jasonknashville/KVMortgageCalculator/main/The%20jason%20kaczmarski%20team.png" alt="The Jason Kaczmarski Team | RE/MAX 1st Choice" class="team" />
-      </a>
-      <a href="https://the-jason-kaczmarski-team-springfield-tn.remax.com/" target="_blank" rel="noopener">
-        <img src="https://raw.githubusercontent.com/jasonknashville/KVMortgageCalculator/main/photo_display.cfm-2.jpeg" alt="RE/MAX Balloon" class="remax" />
-      </a>
-    </div>
+<div class="container">
 
-    <h1>Move-Up Mortgage Calculator</h1>
-    <div class="mode-desc" id="modeDesc">Estimate your next home’s payment using your current equity.</div>
+<h1>Move-Up Mortgage Calculator</h1>
 
-    <div class="tabs">
-      <div class="tab active" id="tab-sell" data-mode="sell">Sell &amp; Use Equity</div>
-      <div class="tab" id="tab-rental" data-mode="rental">Keep Current Home as Rental</div>
-    </div>
+<div class="toggle-buttons">
+  <button id="sellToggle" class="active" onclick="showSection('sell')">Sell Current Home</button>
+  <button id="rentToggle" onclick="showSection('rent')">Keep as Rental</button>
+</div>
 
-    <div class="section-title">New Home</div>
-    <div class="grid">
-      <div class="col-6">
-        <label for="price">Target Purchase Price ($)</label>
-        <input id="price" type="number" inputmode="decimal" value="525000" min="0" step="1000" />
-      </div>
+<!-- SELL SECTION -->
+<div id="sellSection" class="section active">
+  <label>Purchase Price</label>
+  <input type="number" id="purchasePriceSell" value="525000">
 
-      <!-- RENTAL-ONLY DOWN PAYMENT PERCENT (second position) -->
-      <div class="col-3" id="downPctWrap" style="display:none">
-        <label for="downPct">Down Payment (%) 
-          <span class="hint">= <span id="downDollarHint">$26,250</span></span>
-        </label>
-        <input id="downPct" type="number" inputmode="decimal" value="5" min="0" max="100" step="0.25" />
-      </div>
+  <label>Interest Rate (%)</label>
+  <input type="number" id="rateSell" value="6.25">
 
-      <div class="col-3">
-        <label for="rate">Interest Rate (APR %)</label>
-        <input id="rate" type="number" inputmode="decimal" value="6.25" min="0" step="0.01" />
-      </div>
-      <div class="col-3">
-        <label for="term">Loan Term (years)</label>
-        <select id="term"><option>30</option><option>20</option><option>15</option><option>10</option></select>
-      </div>
-      <div class="col-3">
-        <label for="taxPct">Property Tax (% of value / yr)</label>
-        <input id="taxPct" type="number" inputmode="decimal" value="0.5" min="0" step="0.01" />
-      </div>
-      <div class="col-3">
-        <label for="insAnnual">Home Insurance (annual $)</label>
-        <input id="insAnnual" type="number" inputmode="decimal" value="1500" min="0" step="50" />
-      </div>
-      <div class="col-3">
-        <label for="hoa">HOA (monthly $)</label>
-        <input id="hoa" type="number" inputmode="decimal" value="0" min="0" step="5" />
-      </div>
-      <div class="col-3">
-        <label for="pmiPct">PMI (% of loan / yr, if LTV&gt;80%)</label>
-        <input id="pmiPct" type="number" inputmode="decimal" value="0.5" min="0" step="0.05" />
-      </div>
-    </div>
+  <label>Tax Rate (%)</label>
+  <input type="number" id="taxSell" value="0.5">
 
-    <!-- SELL MODE -->
-    <div id="sell-fields">
-      <div class="section-title">Your Current Home (for down payment)</div>
-      <div class="grid">
-        <div class="col-4">
-          <label for="currValue">Est. Sale Price ($)</label>
-          <input id="currValue" type="number" inputmode="decimal" value="450000" min="0" step="1000" />
-        </div>
-        <div class="col-4">
-          <label for="currBalance">Current Mortgage Balance ($)</label>
-          <input id="currBalance" type="number" inputmode="decimal" value="225000" min="0" step="1000" />
-        </div>
-        <div class="col-4">
-          <label for="addCashSell">Additional Down Payment ($)</label>
-          <input id="addCashSell" type="number" inputmode="decimal" value="0" min="0" step="500" />
-        </div>
-        <div class="col-12 eq-box">
-          <div class="eq-item">Estimated Equity: <b id="eqVal">$0</b></div>
-          <div class="eq-item">Additional Cash: <b id="cashValSell">$0</b></div>
-          <div class="eq-item">Applied Down Payment: <b id="appliedDown">$0</b></div>
-        </div>
-      </div>
-    </div>
+  <label>Current Home Value Estimate</label>
+  <input type="number" id="currentValue" value="600000">
 
-    <!-- RENTAL MODE -->
-    <div id="rental-fields" class="hide">
-      <div class="section-title">Rental Offset</div>
-      <div class="grid">
-        <div class="col-4">
-          <label for="expectedRent">Expected Rent ($/mo)</label>
-          <input id="expectedRent" type="number" inputmode="decimal" value="2500" min="0" step="50" />
-        </div>
-        <div class="col-4">
-          <label for="expensePct">Reserve for Vacancies/Repairs (%)</label>
-          <input id="expensePct" type="number" inputmode="decimal" value="15" min="0" max="100" step="1" />
-        </div>
-        <div class="col-4">
-          <label for="currentMortgage">Current Mortgage Payment ($/mo)</label>
-          <input id="currentMortgage" type="number" inputmode="decimal" value="1300" min="0" step="25" />
-        </div>
-        <div class="col-12 eq-box">
-          <div class="eq-item">Net Rental Cash Flow: <b id="netRent">$0</b></div>
-          <div class="eq-item">Effective New Payment (after rent): <b id="effective">$0</b></div>
-        </div>
-      </div>
-    </div>
+  <label>Current Mortgage Balance</label>
+  <input type="number" id="currentBalance" value="225000">
 
-    <div class="actions">
-      <button class="primary" id="calcBtn">Calculate</button>
-      <button class="ghost" id="copyLink">Copy sharable link</button>
-      <button class="ghost" id="copyEmbed">Copy &lt;iframe&gt; embed</button>
-    </div>
+  <label>Additional Down Payment (Optional)</label>
+  <input type="number" id="extraDownSell" value="0">
 
-    <div class="totals">
-      <div class="total-card">
-        <h2><span id="monthlyTitle">Monthly Payment (All-in)</span></h2>
-        <div class="muted">P&amp;I + taxes + insurance + PMI + HOA</div>
-        <div style="font-size:2rem;font-weight:800;margin-top:6px" id="monthly">$0</div>
-      </div>
-      <div class="total-card">
-        <h2>Loan Details</h2>
-        <div class="small" id="loanDetails">—</div>
-      </div>
-    </div>
+  <button onclick="calculateSell()" style="margin-top:20px;">Calculate</button>
 
-    <div class="breakdown" id="breakdown"></div>
+  <div id="sellResults" class="results"></div>
+</div>
 
-    <div class="foot">
-      © 2025 The Jason Kaczmarski Team | RE/MAX 1st Choice | TN Licensed Broker. <br/>
-      Estimates only. Not a commitment to lend. <br/>
-      <a href="https://the-jason-kaczmarski-team-springfield-tn.remax.com/" target="_blank" rel="noopener">the-jason-kaczmarski-team-springfield-tn.remax.com</a>
-    </div>
-  </div>
+<!-- RENT SECTION -->
+<div id="rentSection" class="section">
+
+  <label>Purchase Price</label>
+  <input type="number" id="purchasePriceRent" value="525000">
+
+  <label>Down Payment (%)</label>
+  <input type="number" id="downRent" value="5">
+
+  <label>Interest Rate (%)</label>
+  <input type="number" id="rateRent" value="6.25">
+
+  <label>Expected Rent</label>
+  <input type="number" id="rentAmount" value="2500">
+
+  <label>Current Mortgage Payment</label>
+  <input type="number" id="mortgageRent" value="1300">
+
+  <button onclick="calculateRent()" style="margin-top:20px;">Calculate</button>
+
+  <div id="rentResults" class="results"></div>
+</div>
+
+<footer>
+  Estimates only. Not a commitment to lend. Always verify numbers with a licensed lender.
+</footer>
+
 </div>
 
 <script>
-function fmt(n){return n.toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0})}
-function chip(label, value){ const d=document.createElement('div'); d.className='chip'; d.innerHTML=`<span>${label}</span><strong>${fmt(value)}</strong>`; return d; }
-function monthlyPI(loan, annualRatePct, years){ const r=annualRatePct/100/12; const n=years*12; if(r===0) return loan/n; return loan*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1); }
-function num(id){ return parseFloat(document.getElementById(id).value||0); }
-function setText(id, val){ document.getElementById(id).textContent = val; }
+function showSection(section) {
+  document.getElementById("sellSection").classList.remove("active");
+  document.getElementById("rentSection").classList.remove("active");
+  document.getElementById("sellToggle").classList.remove("active");
+  document.getElementById("rentToggle").classList.remove("active");
 
-function showDownPct(show){
-  const w=document.getElementById('downPctWrap');
-  if(w) w.style.display = show ? '' : 'none';
-}
-function updateDownHint(){
-  const price=num('price');
-  const pct=num('downPct')||0;
-  const dollars = price * pct / 100;
-  const el=document.getElementById('downDollarHint');
-  if(el) el.textContent = fmt(dollars);
-}
-
-function visible(mode){
-  document.getElementById('sell-fields').classList.toggle('hide', mode!=='sell');
-  document.getElementById('rental-fields').classList.toggle('hide', mode!=='rental');
-  document.getElementById('tab-sell').classList.toggle('active', mode==='sell');
-  document.getElementById('tab-rental').classList.toggle('active', mode==='rental');
-  document.getElementById('monthlyTitle').textContent = (mode==='rental' ? 'New Home Monthly (All-in) & Effective After Rent' : 'Monthly Payment (All-in)');
-  document.getElementById('modeDesc').textContent = (mode==='rental' ? 'See how rental income could offset your new home’s payment.' : 'Estimate your next home’s payment using your current equity.');
-  showDownPct(mode==='rental');
-  updateDownHint();
-}
-
-function compute(){
-  const mode = document.getElementById('tab-sell').classList.contains('active') ? 'sell' : 'rental';
-  const price = num('price'), rate = num('rate'), term=parseInt(document.getElementById('term').value||30,10);
-  const taxPct = num('taxPct'), insAnnual=num('insAnnual'), hoa=num('hoa'), pmiPct=num('pmiPct');
-
-  let down=0;
-  if(mode==='sell'){
-    const currValue=num('currValue'), currBalance=num('currBalance'), addCashSell=num('addCashSell');
-    const equity = Math.max(0, currValue - currBalance);
-    down = Math.min(price, equity + addCashSell);
-    setText('eqVal', fmt(equity)); setText('cashValSell', fmt(addCashSell)); setText('appliedDown', fmt(down));
+  if (section === "sell") {
+    document.getElementById("sellSection").classList.add("active");
+    document.getElementById("sellToggle").classList.add("active");
   } else {
-    const downPct=num('downPct')||0;
-    down = Math.min(price, price * (downPct/100));
-  }
-
-  const loan=Math.max(price-down,0), ltv=loan/Math.max(price,1);
-  const pi=monthlyPI(loan,rate,term), taxes=(price*(taxPct/100))/12, insurance=insAnnual/12;
-  const pmiMonthly = (ltv>0.80 ? (loan*(pmiPct/100))/12 : 0);
-  const monthlyAllIn = pi + taxes + insurance + pmiMonthly + hoa;
-
-  setText('monthly', fmt(monthlyAllIn));
-  const bd=document.getElementById('breakdown'); bd.innerHTML='';
-  bd.appendChild(chip('Principal & Interest', pi));
-  bd.appendChild(chip('Property Taxes', taxes));
-  bd.appendChild(chip('Home Insurance', insurance));
-  if(pmiMonthly>0) bd.appendChild(chip('PMI (until 80% LTV)', pmiMonthly));
-  if(hoa>0) bd.appendChild(chip('HOA', hoa));
-
-  document.getElementById('loanDetails').innerHTML =
-    `Price: <strong>${fmt(price)}</strong> • Down: <strong>${fmt(down)}</strong><br>
-     Loan: <strong>${fmt(loan)}</strong> • Rate: <strong>${rate.toFixed(2)}%</strong> • Term: <strong>${term} yrs</strong><br>
-     LTV: <strong>${(ltv*100).toFixed(1)}%</strong>${ltv>0.80?' • PMI applies':''}`;
-
-  if(mode==='rental'){
-    const expectedRent=num('expectedRent'), expensePct=num('expensePct'), currentMortgage=num('currentMortgage');
-    const netRentCashFlow=(expectedRent*(1-expensePct/100)) - currentMortgage;
-    const effectivePayment = monthlyAllIn - netRentCashFlow;
-    setText('netRent', fmt(netRentCashFlow));
-    setText('effective', fmt(effectivePayment));
+    document.getElementById("rentSection").classList.add("active");
+    document.getElementById("rentToggle").classList.add("active");
   }
 }
 
-function paramsFromState(){
-  const mode=document.getElementById('tab-sell').classList.contains('active')?'sell':'rental';
-  const ids=['price','rate','term','taxPct','insAnnual','hoa','pmiPct','currValue','currBalance','addCashSell','expectedRent','expensePct','currentMortgage','downPct'];
-  const q=new URLSearchParams(); q.set('mode',mode);
-  ids.forEach(id=>{ const el=document.getElementById(id); if(el) q.set(id,String(el.value));});
-  return q.toString();
-}
-function applyStateFromParams(){
-  const q=new URL(window.location.href).searchParams;
-  const mode=q.get('mode'); if(mode) visible(mode);
-  const ids=['price','rate','term','taxPct','insAnnual','hoa','pmiPct','currValue','currBalance','addCashSell','expectedRent','expensePct','currentMortgage','downPct'];
-  ids.forEach(id=>{ if(q.has(id) && document.getElementById(id)) document.getElementById(id).value=q.get(id); });
-  updateDownHint();
+function pmt(rate, nper, pv) {
+  let r = rate / 100 / 12;
+  return (pv * r) / (1 - Math.pow(1 + r, -nper));
 }
 
-(function init(){
-  document.getElementById('tab-sell').addEventListener('click',()=>{ visible('sell'); compute(); });
-  document.getElementById('tab-rental').addEventListener('click',()=>{ visible('rental'); compute(); });
-  const allIds=['price','rate','term','taxPct','insAnnual','hoa','pmiPct','currValue','currBalance','addCashSell','expectedRent','expensePct','currentMortgage','downPct'];
-  document.getElementById('calcBtn').addEventListener('click', compute);
-  allIds.forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input', ()=>{ if(id==='price'||id==='downPct') updateDownHint(); compute(); }); });
+function calculateSell() {
+  let purchase = +document.getElementById("purchasePriceSell").value;
+  let rate = +document.getElementById("rateSell").value;
+  let tax = +document.getElementById("taxSell").value;
+  let currentValue = +document.getElementById("currentValue").value;
+  let currentBalance = +document.getElementById("currentBalance").value;
+  let extraDown = +document.getElementById("extraDownSell").value;
 
-  document.getElementById('copyLink').addEventListener('click', async ()=>{
-    const base=location.href.split('?')[0]; const link=base+'?'+paramsFromState();
-    try{ await navigator.clipboard.writeText(link); alert('Sharable link copied!'); }catch(e){ prompt('Copy this link:', link); }
-  });
-  document.getElementById('copyEmbed').addEventListener('click', async ()=>{
-    const base=location.href.split('?')[0]; const src=base+'?'+paramsFromState();
-    const code=`<iframe src="${src}" width="100%" height="760" style="border:0;max-width:980px" loading="lazy"></iframe>`;
-    try{ await navigator.clipboard.writeText(code); alert('<iframe> embed code copied!'); }catch(e){ prompt('Copy this embed code:', code); }
-  });
+  let equity = currentValue - currentBalance;
+  let down = equity + extraDown;
+  if (down < 0) down = 0;
 
-  applyStateFromParams();
-  visible('sell');
-  compute();
-})();
+  let loanAmount = purchase - down;
+  let payment = pmt(rate, 360, loanAmount);
+
+  let taxMonthly = (purchase * (tax / 100)) / 12;
+
+  document.getElementById("sellResults").innerHTML = `
+    <strong>Estimated New Payment:</strong> $${(payment + taxMonthly).toFixed(2)}
+    <br><strong>Down Payment:</strong> $${down.toLocaleString()}
+    <br><strong>Loan Amount:</strong> $${loanAmount.toLocaleString()}
+  `;
+}
+
+function calculateRent() {
+  let purchase = +document.getElementById("purchasePriceRent").value;
+  let downPercent = +document.getElementById("downRent").value;
+  let rate = +document.getElementById("rateRent").value;
+  let rentAmt = +document.getElementById("rentAmount").value;
+  let mortgage = +document.getElementById("mortgageRent").value;
+
+  let downDollar = purchase * (downPercent / 100);
+  let loanAmount = purchase - downDollar;
+
+  let payment = pmt(rate, 360, loanAmount);
+
+  let rentNet = rentAmt * 0.85; // 15% expense assumption
+  let applied = rentNet - mortgage;
+
+  document.getElementById("rentResults").innerHTML = `
+    <strong>New Payment Before Rent Offset:</strong> $${payment.toFixed(2)}
+    <br><strong>Net Rent After 15% Reserves:</strong> $${rentNet.toFixed(2)}
+    <br><strong>Amount Applied Toward New Payment:</strong> $${applied.toFixed(2)}
+    <br><strong>Effective Payment:</strong> $${(payment - applied).toFixed(2)}
+  `;
+}
 </script>
+
 </body>
 </html>
