@@ -1,466 +1,297 @@
-HTML:
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Mortgage Payoff Calculator (Version A)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    .mpc-container {
-      max-width: 800px;
-      margin: 0 auto;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      padding: 1.5rem;
-      border-radius: 12px;
-      border: 1px solid #ddd;
-      background: #fafafa;
-    }
-    .mpc-container h2 {
-      margin-top: 0;
-      margin-bottom: 0.5rem;
-    }
-    .mpc-description {
-      font-size: 0.9rem;
-      color: #555;
-      margin-bottom: 1rem;
-    }
-    .mpc-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 0.75rem 1rem;
-    }
-    .mpc-field {
-      display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
-      font-size: 0.9rem;
-    }
-    .mpc-field label {
-      font-weight: 600;
-    }
-    .mpc-field small {
-      font-size: 0.8rem;
-      color: #666;
-    }
-    .mpc-field input {
-      padding: 0.45rem 0.55rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 0.9rem;
-    }
-    .mpc-actions {
-      margin-top: 1rem;
-      display: flex;
-      justify-content: flex-start;
-      gap: 0.75rem;
-    }
-    .mpc-button {
-      border-radius: 999px;
-      border: none;
-      padding: 0.55rem 1.25rem;
-      font-size: 0.95rem;
-      cursor: pointer;
-      background: #1e88e5;
-      color: #fff;
-      font-weight: 600;
-    }
-    .mpc-button.secondary {
-      background: #eee;
-      color: #333;
-      border: 1px solid #ccc;
-    }
-    .mpc-results {
-      margin-top: 1rem;
-      padding: 0.85rem 1rem;
-      border-radius: 8px;
-      background: #f4f8ff;
-      border: 1px solid #c5d9ff;
-      font-size: 0.9rem;
-    }
-    .mpc-results h4 {
-      margin-top: 0;
-      margin-bottom: 0.35rem;
-    }
-    .mpc-error {
-      color: #b00020;
-      font-size: 0.85rem;
-      margin-top: 0.25rem;
-    }
-    .mpc-disclaimer {
-      margin-top: 1rem;
-      font-size: 0.8rem;
-      color: #777;
-    }
-    @media (max-width: 600px) {
-      .mpc-container {
-        padding: 1rem;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Move-Up Mortgage Calculator • Jason Kaczmarski Team</title>
+<style>
+  :root{
+    --radius:14px; --shadow:0 6px 28px rgba(0,0,0,.08); --gap:14px;
+    --font:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    --brand-blue:#1e3a8a; --brand-red:#d92c2c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:18px;font-family:var(--font);background:#f7f7f8;color:#111}
+  .wrap{max-width:980px;margin:0 auto}
+  .card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:clamp(14px,2vw,22px)}
+  .header-logos{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:12px;flex-wrap:wrap}
+  .header-logos img{object-fit:contain;display:block}
+  .team{height:64px}
+  .remax{height:76px}
+  h1{font-size:1.35rem;margin:6px 0 8px;color:var(--brand-blue);text-align:center}
+  .mode-desc{text-align:center;margin:6px 0 12px;font-size:.95rem;color:#444}
+  .tabs{display:flex;background:#f0f3ff;border-radius:12px;padding:4px;gap:6px;margin-bottom:12px;flex-wrap:wrap;justify-content:center}
+  .tab{padding:8px 14px;border-radius:10px;cursor:pointer;user-select:none;font-weight:600;color:var(--brand-blue)}
+  .tab.active{background:white;box-shadow:0 1px 0 1px rgba(0,0,0,.04);color:var(--brand-red)}
+  label{font-size:.9rem;color:#333;display:block;margin-bottom:6px}
+  input,select{width:100%;padding:12px 12px;border:1px solid #e6e6ea;border-radius:10px;font-size:1rem;background:#fff;}
+  input:focus,select:focus{outline:none;border-color:var(--brand-blue);box-shadow:0 0 0 3px rgba(30,58,138,.15)}
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gap)}
+  .col-3{grid-column:span 3} .col-4{grid-column:span 4} .col-6{grid-column:span 6} .col-8{grid-column:span 8} .col-12{grid-column:span 12}
+  @media(max-width:860px){.col-3,.col-4,.col-6,.col-8{grid-column:span 12} .team{height:52px} .remax{height:64px}}
+  .eq-box{background:#fff;border:1px dashed #ddd;border-radius:12px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .eq-item{display:flex;gap:6px;align-items:baseline;font-size:.96rem} .eq-item b{font-size:1rem}
+  .totals{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gap);margin-top:8px}
+  .total-card{grid-column:span 6;background:#fafafa;border:1px solid #eee;border-radius:12px;padding:12px}
+  @media(max-width:760px){.total-card{grid-column:span 12}}
+  .total-card h2{margin:0 0 4px;font-size:1.1rem;color:var(--brand-blue)}
+  .breakdown{display:grid;grid-template-columns:repeat(12,1fr);gap:8px;margin-top:6px}
+  .chip{grid-column:span 6;display:flex;justify-content:space-between;background:#fff;border:1px solid #eee;border-radius:10px;padding:10px 12px;font-size:.96rem}
+  @media(max-width:760px){.chip{grid-column:span 12}}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:center}
+  button{border:0;border-radius:10px;padding:10px 14px;font-size:.95rem;cursor:pointer}
+  .primary{background:var(--brand-blue);color:white}
+  .ghost{background:#efeffe;color:#30237a}
+  .foot{margin-top:16px;color:#666;font-size:.85rem;text-align:center;border-top:1px solid #eee;padding-top:10px}
+  .hide{display:none!important}
+  .hint{font-size:.8rem;color:#666;margin-left:6px}
+</style>
 </head>
 <body>
-  <div class="mpc-container">
-    <h2>Mortgage Payoff Calculator</h2>
-    <p class="mpc-description">
-      Start with your original loan details, estimate your remaining balance today, and see how an extra monthly
-      principal payment could change your payoff date. This is for <strong>illustrative purposes only</strong> —
-      actual figures may differ. Please confirm details with your lender.
-    </p>
+<div class="wrap">
+  <div class="card">
+    <div class="header-logos">
+      <a href="https://the-jason-kaczmarski-team-springfield-tn.remax.com/" target="_blank" rel="noopener">
+        <img src="https://raw.githubusercontent.com/jasonknashville/KVMortgageCalculator/main/The%20jason%20kaczmarski%20team.png" alt="The Jason Kaczmarski Team | RE/MAX 1st Choice" class="team" />
+      </a>
+      <a href="https://the-jason-kaczmarski-team-springfield-tn.remax.com/" target="_blank" rel="noopener">
+        <img src="https://raw.githubusercontent.com/jasonknashville/KVMortgageCalculator/main/photo_display.cfm-2.jpeg" alt="RE/MAX Balloon" class="remax" />
+      </a>
+    </div>
 
-    <div id="mpc-mode-original">
-      <h3 style="margin-top:0;">Start from Original Loan</h3>
+    <h1>Move-Up Mortgage Calculator</h1>
+    <div class="mode-desc" id="modeDesc">Estimate your next home’s payment using your current equity.</div>
 
-      <div class="mpc-grid">
-        <div class="mpc-field">
-          <label for="mpc-orig-purchase-price">Original Purchase Price ($)</label>
-          <input type="text" id="mpc-orig-purchase-price" placeholder="300000" />
-          <small>If you know your original loan amount, enter it below.</small>
-        </div>
+    <div class="tabs">
+      <div class="tab active" id="tab-sell" data-mode="sell">Sell &amp; Use Equity</div>
+      <div class="tab" id="tab-rental" data-mode="rental">Keep Current Home as Rental</div>
+    </div>
 
-        <div class="mpc-field">
-          <label for="mpc-orig-loan-amount">Original Loan Amount ($)</label>
-          <input type="text" id="mpc-orig-loan-amount" placeholder="Leave blank to use purchase price" />
-          <small>Optional. Use this if you made a down payment.</small>
-        </div>
-
-        <div class="mpc-field">
-          <label for="mpc-current-balance">Current Balance ($) – optional</label>
-          <input type="text" id="mpc-current-balance" placeholder="e.g. 87000" />
-          <small>If you know your current balance, enter it for more accurate payoff timing.</small>
-        </div>
-
-        <div class="mpc-field">
-          <label for="mpc-orig-rate">Interest Rate (APR %)</label>
-          <input type="text" id="mpc-orig-rate" placeholder="4.25" />
-        </div>
-
-        <div class="mpc-field">
-          <label for="mpc-orig-term">Loan Term (years)</label>
-          <input type="text" id="mpc-orig-term" value="30" />
-          <small>Most fixed-rate mortgages are 15 or 30 years.</small>
-        </div>
-
-        <div class="mpc-field">
-          <label for="mpc-orig-date">Purchase / Loan Start Date</label>
-          <input type="date" id="mpc-orig-date" />
-        </div>
-
-        <div class="mpc-field">
-          <label for="mpc-orig-extra">Extra Monthly Principal ($)</label>
-          <input type="text" id="mpc-orig-extra" placeholder="e.g. 150" />
-          <small>How much extra you'd like to add to principal each month.</small>
-        </div>
+    <div class="section-title">New Home</div>
+    <div class="grid">
+      <div class="col-6">
+        <label for="price">Target Purchase Price ($)</label>
+        <input id="price" type="number" inputmode="decimal" value="525000" min="0" step="1000" />
       </div>
 
-      <div class="mpc-actions">
-        <button class="mpc-button" id="mpc-calc-btn" onclick="mpcCalculateOriginal()">Calculate</button>
-        <button class="mpc-button secondary" id="mpc-reset-btn" onclick="mpcResetOriginal()">Reset</button>
+      <!-- RENTAL-ONLY DOWN PAYMENT PERCENT (second position) -->
+      <div class="col-3" id="downPctWrap" style="display:none">
+        <label for="downPct">Down Payment (%) 
+          <span class="hint">= <span id="downDollarHint">$26,250</span></span>
+        </label>
+        <input id="downPct" type="number" inputmode="decimal" value="5" min="0" max="100" step="0.25" />
       </div>
 
-      <div id="mpc-orig-error" class="mpc-error"></div>
-      <div id="mpc-orig-results" class="mpc-results" style="display:none;"></div>
-
-      <!-- Email my results section -->
-      <div id="mpc-email-section" style="display:none; margin-top:0.75rem; font-size:0.9rem;">
-        <p><strong>Want these results emailed to you?</strong></p>
-        <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
-          <input
-            type="email"
-            id="mpc-user-email"
-            placeholder="Your email address"
-            style="flex:1; min-width:220px; padding:0.45rem 0.55rem; border-radius:6px; border:1px solid #ccc; font-size:0.9rem;"
-          />
-          <button class="mpc-button secondary" id="mpc-email-btn" type="button">
-            Email My Results
-          </button>
-        </div>
-        <div id="mpc-email-status" style="margin-top:0.25rem; font-size:0.8rem;"></div>
+      <div class="col-3">
+        <label for="rate">Interest Rate (APR %)</label>
+        <input id="rate" type="number" inputmode="decimal" value="6.25" min="0" step="0.01" />
+      </div>
+      <div class="col-3">
+        <label for="term">Loan Term (years)</label>
+        <select id="term"><option>30</option><option>20</option><option>15</option><option>10</option></select>
+      </div>
+      <div class="col-3">
+        <label for="taxPct">Property Tax (% of value / yr)</label>
+        <input id="taxPct" type="number" inputmode="decimal" value="0.5" min="0" step="0.01" />
+      </div>
+      <div class="col-3">
+        <label for="insAnnual">Home Insurance (annual $)</label>
+        <input id="insAnnual" type="number" inputmode="decimal" value="1500" min="0" step="50" />
+      </div>
+      <div class="col-3">
+        <label for="hoa">HOA (monthly $)</label>
+        <input id="hoa" type="number" inputmode="decimal" value="0" min="0" step="5" />
+      </div>
+      <div class="col-3">
+        <label for="pmiPct">PMI (% of loan / yr, if LTV&gt;80%)</label>
+        <input id="pmiPct" type="number" inputmode="decimal" value="0.5" min="0" step="0.05" />
       </div>
     </div>
 
-    <p class="mpc-disclaimer">
-      This calculator estimates principal and interest based on a standard fixed-rate mortgage amortization.
-      It does not account for escrow (taxes/insurance), adjustable rates, late payments, or fees.
-      Always verify payoff amounts and dates with your loan servicer.
-    </p>
+    <!-- SELL MODE -->
+    <div id="sell-fields">
+      <div class="section-title">Your Current Home (for down payment)</div>
+      <div class="grid">
+        <div class="col-4">
+          <label for="currValue">Est. Sale Price ($)</label>
+          <input id="currValue" type="number" inputmode="decimal" value="450000" min="0" step="1000" />
+        </div>
+        <div class="col-4">
+          <label for="currBalance">Current Mortgage Balance ($)</label>
+          <input id="currBalance" type="number" inputmode="decimal" value="225000" min="0" step="1000" />
+        </div>
+        <div class="col-4">
+          <label for="addCashSell">Additional Down Payment ($)</label>
+          <input id="addCashSell" type="number" inputmode="decimal" value="0" min="0" step="500" />
+        </div>
+        <div class="col-12 eq-box">
+          <div class="eq-item">Estimated Equity: <b id="eqVal">$0</b></div>
+          <div class="eq-item">Additional Cash: <b id="cashValSell">$0</b></div>
+          <div class="eq-item">Applied Down Payment: <b id="appliedDown">$0</b></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RENTAL MODE -->
+    <div id="rental-fields" class="hide">
+      <div class="section-title">Rental Offset</div>
+      <div class="grid">
+        <div class="col-4">
+          <label for="expectedRent">Expected Rent ($/mo)</label>
+          <input id="expectedRent" type="number" inputmode="decimal" value="2500" min="0" step="50" />
+        </div>
+        <div class="col-4">
+          <label for="expensePct">Reserve for Vacancies/Repairs (%)</label>
+          <input id="expensePct" type="number" inputmode="decimal" value="15" min="0" max="100" step="1" />
+        </div>
+        <div class="col-4">
+          <label for="currentMortgage">Current Mortgage Payment ($/mo)</label>
+          <input id="currentMortgage" type="number" inputmode="decimal" value="1300" min="0" step="25" />
+        </div>
+        <div class="col-12 eq-box">
+          <div class="eq-item">Net Rental Cash Flow: <b id="netRent">$0</b></div>
+          <div class="eq-item">Effective New Payment (after rent): <b id="effective">$0</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="calcBtn">Calculate</button>
+      <button class="ghost" id="copyLink">Copy sharable link</button>
+      <button class="ghost" id="copyEmbed">Copy &lt;iframe&gt; embed</button>
+    </div>
+
+    <div class="totals">
+      <div class="total-card">
+        <h2><span id="monthlyTitle">Monthly Payment (All-in)</span></h2>
+        <div class="muted">P&amp;I + taxes + insurance + PMI + HOA</div>
+        <div style="font-size:2rem;font-weight:800;margin-top:6px" id="monthly">$0</div>
+      </div>
+      <div class="total-card">
+        <h2>Loan Details</h2>
+        <div class="small" id="loanDetails">—</div>
+      </div>
+    </div>
+
+    <div class="breakdown" id="breakdown"></div>
+
+    <div class="foot">
+      © 2025 The Jason Kaczmarski Team | RE/MAX 1st Choice | TN Licensed Broker. <br/>
+      Estimates only. Not a commitment to lend. <br/>
+      <a href="https://the-jason-kaczmarski-team-springfield-tn.remax.com/" target="_blank" rel="noopener">the-jason-kaczmarski-team-springfield-tn.remax.com</a>
+    </div>
   </div>
+</div>
 
-  <script>
-    // ---------- Utility functions ----------
-    function mpcFormatCurrency(value, decimals = 2) {
-      const num = Number(value);
-      if (!isFinite(num)) return '$0';
-      return num.toLocaleString(undefined, {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals
-      });
-    }
+<script>
+function fmt(n){return n.toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0})}
+function chip(label, value){ const d=document.createElement('div'); d.className='chip'; d.innerHTML=`<span>${label}</span><strong>${fmt(value)}</strong>`; return d; }
+function monthlyPI(loan, annualRatePct, years){ const r=annualRatePct/100/12; const n=years*12; if(r===0) return loan/n; return loan*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1); }
+function num(id){ return parseFloat(document.getElementById(id).value||0); }
+function setText(id, val){ document.getElementById(id).textContent = val; }
 
-    // Parse a number from an input by id: strip commas, trim, convert
-    function mpcParseNumber(id) {
-      const el = document.getElementById(id);
-      if (!el) return NaN;
-      const raw = (el.value || '').toString().replace(/,/g, '').trim();
-      if (!raw) return NaN;
-      const num = Number(raw);
-      return isNaN(num) ? NaN : num;
-    }
+function showDownPct(show){
+  const w=document.getElementById('downPctWrap');
+  if(w) w.style.display = show ? '' : 'none';
+}
+function updateDownHint(){
+  const price=num('price');
+  const pct=num('downPct')||0;
+  const dollars = price * pct / 100;
+  const el=document.getElementById('downDollarHint');
+  if(el) el.textContent = fmt(dollars);
+}
 
-    function mpcDiffInMonths(d1, d2) {
-      return (d2.getFullYear() - d1.getFullYear()) * 12 + (d2.getMonth() - d1.getMonth());
-    }
+function visible(mode){
+  document.getElementById('sell-fields').classList.toggle('hide', mode!=='sell');
+  document.getElementById('rental-fields').classList.toggle('hide', mode!=='rental');
+  document.getElementById('tab-sell').classList.toggle('active', mode==='sell');
+  document.getElementById('tab-rental').classList.toggle('active', mode==='rental');
+  document.getElementById('monthlyTitle').textContent = (mode==='rental' ? 'New Home Monthly (All-in) & Effective After Rent' : 'Monthly Payment (All-in)');
+  document.getElementById('modeDesc').textContent = (mode==='rental' ? 'See how rental income could offset your new home’s payment.' : 'Estimate your next home’s payment using your current equity.');
+  showDownPct(mode==='rental');
+  updateDownHint();
+}
 
-    function mpcAddMonths(date, months) {
-      const d = new Date(date.getTime());
-      d.setMonth(d.getMonth() + months);
-      return d;
-    }
+function compute(){
+  const mode = document.getElementById('tab-sell').classList.contains('active') ? 'sell' : 'rental';
+  const price = num('price'), rate = num('rate'), term=parseInt(document.getElementById('term').value||30,10);
+  const taxPct = num('taxPct'), insAnnual=num('insAnnual'), hoa=num('hoa'), pmiPct=num('pmiPct');
 
-    function mpcFormatDate(date) {
-      return date.toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-    }
+  let down=0;
+  if(mode==='sell'){
+    const currValue=num('currValue'), currBalance=num('currBalance'), addCashSell=num('addCashSell');
+    const equity = Math.max(0, currValue - currBalance);
+    down = Math.min(price, equity + addCashSell);
+    setText('eqVal', fmt(equity)); setText('cashValSell', fmt(addCashSell)); setText('appliedDown', fmt(down));
+  } else {
+    const downPct=num('downPct')||0;
+    down = Math.min(price, price * (downPct/100));
+  }
 
-    function mpcMonthlyPayment(P, annualRate, years) {
-      const n = years * 12;
-      if (n <= 0) return 0;
-      if (annualRate === 0) return P / n;
+  const loan=Math.max(price-down,0), ltv=loan/Math.max(price,1);
+  const pi=monthlyPI(loan,rate,term), taxes=(price*(taxPct/100))/12, insurance=insAnnual/12;
+  const pmiMonthly = (ltv>0.80 ? (loan*(pmiPct/100))/12 : 0);
+  const monthlyAllIn = pi + taxes + insurance + pmiMonthly + hoa;
 
-      const r = annualRate / 12;
-      const factor = Math.pow(1 + r, n);
-      return P * (r * factor) / (factor - 1);
-    }
+  setText('monthly', fmt(monthlyAllIn));
+  const bd=document.getElementById('breakdown'); bd.innerHTML='';
+  bd.appendChild(chip('Principal & Interest', pi));
+  bd.appendChild(chip('Property Taxes', taxes));
+  bd.appendChild(chip('Home Insurance', insurance));
+  if(pmiMonthly>0) bd.appendChild(chip('PMI (until 80% LTV)', pmiMonthly));
+  if(hoa>0) bd.appendChild(chip('HOA', hoa));
 
-    function mpcBalanceAfter(P, annualRate, years, kPayments) {
-      const n = years * 12;
-      const k = Math.max(0, Math.min(kPayments, n));
+  document.getElementById('loanDetails').innerHTML =
+    `Price: <strong>${fmt(price)}</strong> • Down: <strong>${fmt(down)}</strong><br>
+     Loan: <strong>${fmt(loan)}</strong> • Rate: <strong>${rate.toFixed(2)}%</strong> • Term: <strong>${term} yrs</strong><br>
+     LTV: <strong>${(ltv*100).toFixed(1)}%</strong>${ltv>0.80?' • PMI applies':''}`;
 
-      if (annualRate === 0) {
-        const principalPaid = (P / n) * k;
-        return Math.max(0, P - principalPaid);
-      }
-      const r = annualRate / 12;
-      const factorN = Math.pow(1 + r, n);
-      const factorK = Math.pow(1 + r, k);
-      const balance = P * (factorN - factorK) / (factorN - 1);
-      return Math.max(0, balance);
-    }
+  if(mode==='rental'){
+    const expectedRent=num('expectedRent'), expensePct=num('expensePct'), currentMortgage=num('currentMortgage');
+    const netRentCashFlow=(expectedRent*(1-expensePct/100)) - currentMortgage;
+    const effectivePayment = monthlyAllIn - netRentCashFlow;
+    setText('netRent', fmt(netRentCashFlow));
+    setText('effective', fmt(effectivePayment));
+  }
+}
 
-    function mpcMonthsToPayoff(balance, annualRate, monthlyPayment) {
-      const B = balance;
-      const Pmt = monthlyPayment;
-      if (B <= 0 || Pmt <= 0) return 0;
+function paramsFromState(){
+  const mode=document.getElementById('tab-sell').classList.contains('active')?'sell':'rental';
+  const ids=['price','rate','term','taxPct','insAnnual','hoa','pmiPct','currValue','currBalance','addCashSell','expectedRent','expensePct','currentMortgage','downPct'];
+  const q=new URLSearchParams(); q.set('mode',mode);
+  ids.forEach(id=>{ const el=document.getElementById(id); if(el) q.set(id,String(el.value));});
+  return q.toString();
+}
+function applyStateFromParams(){
+  const q=new URL(window.location.href).searchParams;
+  const mode=q.get('mode'); if(mode) visible(mode);
+  const ids=['price','rate','term','taxPct','insAnnual','hoa','pmiPct','currValue','currBalance','addCashSell','expectedRent','expensePct','currentMortgage','downPct'];
+  ids.forEach(id=>{ if(q.has(id) && document.getElementById(id)) document.getElementById(id).value=q.get(id); });
+  updateDownHint();
+}
 
-      if (annualRate === 0) {
-        return B / Pmt;
-      }
+(function init(){
+  document.getElementById('tab-sell').addEventListener('click',()=>{ visible('sell'); compute(); });
+  document.getElementById('tab-rental').addEventListener('click',()=>{ visible('rental'); compute(); });
+  const allIds=['price','rate','term','taxPct','insAnnual','hoa','pmiPct','currValue','currBalance','addCashSell','expectedRent','expensePct','currentMortgage','downPct'];
+  document.getElementById('calcBtn').addEventListener('click', compute);
+  allIds.forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input', ()=>{ if(id==='price'||id==='downPct') updateDownHint(); compute(); }); });
 
-      const r = annualRate / 12;
-      if (Pmt <= B * r) {
-        return Infinity;
-      }
+  document.getElementById('copyLink').addEventListener('click', async ()=>{
+    const base=location.href.split('?')[0]; const link=base+'?'+paramsFromState();
+    try{ await navigator.clipboard.writeText(link); alert('Sharable link copied!'); }catch(e){ prompt('Copy this link:', link); }
+  });
+  document.getElementById('copyEmbed').addEventListener('click', async ()=>{
+    const base=location.href.split('?')[0]; const src=base+'?'+paramsFromState();
+    const code=`<iframe src="${src}" width="100%" height="760" style="border:0;max-width:980px" loading="lazy"></iframe>`;
+    try{ await navigator.clipboard.writeText(code); alert('<iframe> embed code copied!'); }catch(e){ prompt('Copy this embed code:', code); }
+  });
 
-      const numerator = Math.log(Pmt / (Pmt - B * r));
-      const denominator = Math.log(1 + r);
-      return numerator / denominator;
-    }
-
-    // ---------- Reset ----------
-    function mpcResetOriginal() {
-      [
-        'mpc-orig-purchase-price',
-        'mpc-orig-loan-amount',
-        'mpc-current-balance',
-        'mpc-orig-rate',
-        'mpc-orig-term',
-        'mpc-orig-date',
-        'mpc-orig-extra',
-        'mpc-user-email'
-      ].forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        if (el.type === 'date') el.value = '';
-        else el.value = '';
-      });
-      document.getElementById('mpc-orig-term').value = '30';
-      document.getElementById('mpc-orig-error').textContent = '';
-      document.getElementById('mpc-orig-results').style.display = 'none';
-      document.getElementById('mpc-email-section').style.display = 'none';
-      document.getElementById('mpc-email-status').textContent = '';
-    }
-
-    // ---------- Calculate ----------
-    function mpcCalculateOriginal() {
-      const errEl = document.getElementById('mpc-orig-error');
-      const resEl = document.getElementById('mpc-orig-results');
-      errEl.textContent = '';
-      resEl.style.display = 'none';
-      resEl.innerHTML = '';
-
-      const purchasePrice = mpcParseNumber('mpc-orig-purchase-price');
-      const loanAmountInput = mpcParseNumber('mpc-orig-loan-amount');
-      const currentBalanceInput = mpcParseNumber('mpc-current-balance');
-      const ratePct = mpcParseNumber('mpc-orig-rate');
-      const termYears = mpcParseNumber('mpc-orig-term');
-      const dateEl = document.getElementById('mpc-orig-date');
-      const dateStr = dateEl && dateEl.value ? dateEl.value : '';
-      const extra = mpcParseNumber('mpc-orig-extra');
-      const extraSafe = isNaN(extra) ? 0 : extra;
-
-      // Basic validation with friendly messages
-      if (isNaN(purchasePrice) && isNaN(loanAmountInput)) {
-        errEl.textContent = 'Please enter at least the original purchase price or original loan amount (numbers only, commas are okay).';
-        return;
-      }
-      if (isNaN(ratePct) || ratePct <= 0) {
-        errEl.textContent = 'Please enter a valid interest rate (numbers only, e.g. 3.65).';
-        return;
-      }
-      if (isNaN(termYears) || termYears <= 0) {
-        errEl.textContent = 'Please enter a valid loan term in years (numbers only).';
-        return;
-      }
-      if (!dateStr) {
-        errEl.textContent = 'Please enter your purchase / loan start date.';
-        return;
-      }
-
-      const P = !isNaN(loanAmountInput) && loanAmountInput > 0 ? loanAmountInput : purchasePrice;
-      const annualRate = ratePct / 100;
-      const nTotal = termYears * 12;
-
-      const startDate = new Date(dateStr + 'T00:00:00');
-      const today = new Date();
-      let monthsElapsed = mpcDiffInMonths(startDate, today);
-      if (monthsElapsed < 0) monthsElapsed = 0;
-      if (monthsElapsed > nTotal) monthsElapsed = nTotal;
-
-      const monthlyPmt = mpcMonthlyPayment(P, annualRate, termYears);
-      const remainingBalanceSchedule = mpcBalanceAfter(P, annualRate, termYears, monthsElapsed);
-
-      const balanceForTimeline = !isNaN(currentBalanceInput) && currentBalanceInput > 0
-        ? currentBalanceInput
-        : remainingBalanceSchedule;
-
-      let baselineMonthsRemaining = mpcMonthsToPayoff(balanceForTimeline, annualRate, monthlyPmt);
-      if (!isFinite(baselineMonthsRemaining)) {
-        errEl.textContent = 'Based on these inputs, the regular payment is too low to pay off the loan.';
-        return;
-      }
-      const baselineMonthsRounded = Math.round(baselineMonthsRemaining);
-      const baselinePayoffDateFromToday = mpcAddMonths(today, baselineMonthsRounded);
-
-      const originalScheduledPayoffDate = mpcAddMonths(startDate, nTotal);
-
-      let html = '<h4>Results</h4>';
-      html += `<p><strong>Original loan amount:</strong> ${mpcFormatCurrency(P, 0)}</p>`;
-      html += `<p><strong>Monthly principal &amp; interest (P&amp;I):</strong> ${mpcFormatCurrency(monthlyPmt)}</p>`;
-      html += `<p><strong>Estimated remaining balance today (based on schedule):</strong> ${mpcFormatCurrency(remainingBalanceSchedule, 0)}</p>`;
-
-      if (!isNaN(currentBalanceInput) && currentBalanceInput > 0) {
-        html += `<p><strong>Balance you entered:</strong> ${mpcFormatCurrency(currentBalanceInput, 0)} (used for payoff estimates below)</p>`;
-      }
-
-      html += `<p><strong>Scheduled payoff date (based on full term):</strong> ${mpcFormatDate(originalScheduledPayoffDate)}</p>`;
-      html += `<p><strong>Estimated payoff date from today (no extra):</strong> ${mpcFormatDate(baselinePayoffDateFromToday)}</p>`;
-
-      if (extraSafe > 0) {
-        const newMonthlyPmt = monthlyPmt + extraSafe;
-        let newMonthsRem = mpcMonthsToPayoff(balanceForTimeline, annualRate, newMonthlyPmt);
-        if (!isFinite(newMonthsRem)) {
-          html += `<p style="color:#b00020;"><strong>Note:</strong> The extra payment entered is not enough to change the payoff date based on these numbers.</p>`;
-        } else {
-          const newMonthsRounded = Math.round(newMonthsRem);
-          const newPayoffDate = mpcAddMonths(today, newMonthsRounded);
-          const monthsSaved = Math.max(0, baselineMonthsRounded - newMonthsRounded);
-          const yearsSaved = monthsSaved / 12;
-
-          html += `<p><strong>New payoff date with extra ${mpcFormatCurrency(extraSafe)} / month:</strong> ${mpcFormatDate(newPayoffDate)}</p>`;
-          if (monthsSaved > 0) {
-            html += `<p>You would pay off the mortgage approximately <strong>${monthsSaved}</strong> months sooner (~<strong>${yearsSaved.toFixed(1)}</strong> years) by making this extra payment.</p>`;
-          }
-        }
-      } else {
-        html += `<p><em>Add an extra monthly principal amount above to see how much sooner you might pay off the loan.</em></p>`;
-      }
-
-      resEl.innerHTML = html;
-      resEl.style.display = 'block';
-
-      // Show email capture
-      const emailSection = document.getElementById('mpc-email-section');
-      if (emailSection) {
-        emailSection.style.display = 'block';
-      }
-    }
-
-    // ---------- Email via Zapier ----------
-    // Replace this with your actual Zapier Webhooks "Catch Hook" URL
-    const MPC_WEBHOOK_URL = "https://hooks.zapier.com/hooks/catch/XXXXXX/YYYYYY";
-
-    async function mpcSendEmailResults() {
-      const emailInput = document.getElementById('mpc-user-email');
-      const statusEl = document.getElementById('mpc-email-status');
-      const email = (emailInput.value || '').trim();
-
-      statusEl.textContent = '';
-
-      if (!email) {
-        statusEl.textContent = 'Please enter your email address.';
-        statusEl.style.color = '#b00020';
-        return;
-      }
-
-      const purchasePrice = mpcParseNumber('mpc-orig-purchase-price');
-      const loanAmountInput = mpcParseNumber('mpc-orig-loan-amount');
-      const currentBalanceInput = mpcParseNumber('mpc-current-balance');
-      const ratePct = mpcParseNumber('mpc-orig-rate');
-      const termYears = mpcParseNumber('mpc-orig-term');
-      const dateEl = document.getElementById('mpc-orig-date');
-      const dateStr = dateEl && dateEl.value ? dateEl.value : '';
-      const extra = mpcParseNumber('mpc-orig-extra');
-
-      try {
-        statusEl.textContent = 'Sending...';
-        statusEl.style.color = '#555';
-
-        await fetch(MPC_WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email,
-            purchasePrice,
-            originalLoanAmount: loanAmountInput,
-            currentBalance: currentBalanceInput,
-            ratePct,
-            termYears,
-            startDate: dateStr,
-            extraMonthlyPrincipal: extra,
-            source: 'Mortgage Payoff Calculator',
-            timestamp: new Date().toISOString()
-          })
-        });
-
-        statusEl.textContent = 'Got it! I’ll email these results to you.';
-        statusEl.style.color = '#0a7c2f';
-        emailInput.value = '';
-      } catch (e) {
-        statusEl.textContent = 'There was an issue sending your results. Please try again.';
-        statusEl.style.color = '#b00020';
-      }
-    }
-
-    // ---------- Wire up buttons ----------
-    document.addEventListener('DOMContentLoaded', function () {
-      const emailBtn = document.getElementById('mpc-email-btn');
-      if (emailBtn) emailBtn.addEventListener('click', mpcSendEmailResults);
-    });
-  </script>
+  applyStateFromParams();
+  visible('sell');
+  compute();
+})();
+</script>
 </body>
 </html>
