@@ -12,7 +12,7 @@
       j.async = true;
       j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
       f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-MH9X9NGV');
+    })(window,document,'script','GTM-MH9X9NGV');
   </script>
   <!-- End Google Tag Manager -->
 
@@ -69,7 +69,6 @@
             height="0" width="0" style="display:none;visibility:hidden"></iframe>
   </noscript>
   <!-- End Google Tag Manager (noscript) -->
-
 
 <div class="wrap">
   <div class="card">
@@ -181,7 +180,7 @@
     <div class="actions">
       <button class="primary" id="calcBtn">Calculate</button>
       <button class="ghost" id="copyLink">Copy sharable link</button>
-      <button class="ghost" id="copyEmbed">Copy &lt;iframe&gt; embed</button>
+      <button class="ghost" id="emailResults">Email me my results</button>
     </div>
 
     <div class="totals">
@@ -294,6 +293,78 @@ function applyStateFromParams(){
   updateDownHint();
 }
 
+function buildEmailBody(userEmail){
+  const isSell = document.getElementById('tab-sell').classList.contains('active');
+  const modeLabel = isSell ? 'Sell & Use Equity' : 'Keep Current Home as Rental';
+
+  const price = num('price');
+  const rate = num('rate');
+  const term = parseInt(document.getElementById('term').value||30,10);
+  const taxPct = num('taxPct');
+  const insAnnual = num('insAnnual');
+  const hoa = num('hoa');
+  const pmiPct = num('pmiPct');
+
+  const monthlyText = document.getElementById('monthly').textContent || '';
+  const loanDetailsText = document.getElementById('loanDetails').innerText || '';
+
+  let extras = '';
+
+  if(isSell){
+    const currValue = num('currValue');
+    const currBalance = num('currBalance');
+    const addCashSell = num('addCashSell');
+    const equity = Math.max(0, currValue - currBalance);
+    extras +=
+`\nSell Mode Inputs:
+- Est. sale price: ${fmt(currValue)}
+- Current mortgage balance: ${fmt(currBalance)}
+- Estimated equity: ${fmt(equity)}
+- Additional cash toward down payment: ${fmt(addCashSell)}`;
+  } else {
+    const expectedRent = num('expectedRent');
+    const expensePct = num('expensePct');
+    const currentMortgage = num('currentMortgage');
+    const netRent = document.getElementById('netRent').textContent || '';
+    const effective = document.getElementById('effective').textContent || '';
+    extras +=
+`\nRental Mode Inputs:
+- Expected rent: ${fmt(expectedRent)}
+- Reserve for vacancies/repairs: ${expensePct.toFixed(1)}%
+- Current mortgage payment: ${fmt(currentMortgage)}
+
+Rental Offset Results:
+- Net rental cash flow: ${netRent}
+- Effective new payment after rent: ${effective}`;
+  }
+
+  return (
+`User email: ${userEmail}
+
+Here are your Move-Up Mortgage Calculator results:
+
+Mode: ${modeLabel}
+
+New Home Inputs:
+- Target purchase price: ${fmt(price)}
+- Interest rate (APR): ${rate.toFixed(2)}%
+- Loan term: ${term} years
+- Property tax (% of value/yr): ${taxPct.toFixed(2)}%
+- Home insurance (annual): ${fmt(insAnnual)}
+- HOA (monthly): ${fmt(hoa)}
+- PMI (% of loan/yr if LTV>80%): ${pmiPct.toFixed(2)}%
+
+Loan & Payment Summary:
+${loanDetailsText}
+
+Monthly all-in payment (P&I + taxes + insurance + PMI + HOA):
+- ${monthlyText}${extras}
+
+These numbers are estimates only and can change based on rate, taxes, insurance, HOA, and lender guidelines.
+Please reply if you'd like to walk through these results together or run alternate scenarios.`
+  );
+}
+
 (function init(){
   document.getElementById('tab-sell').addEventListener('click',()=>{ visible('sell'); compute(); });
   document.getElementById('tab-rental').addEventListener('click',()=>{ visible('rental'); compute(); });
@@ -305,10 +376,29 @@ function applyStateFromParams(){
     const base=location.href.split('?')[0]; const link=base+'?'+paramsFromState();
     try{ await navigator.clipboard.writeText(link); alert('Sharable link copied!'); }catch(e){ prompt('Copy this link:', link); }
   });
-  document.getElementById('copyEmbed').addEventListener('click', async ()=>{
-    const base=location.href.split('?')[0]; const src=base+'?'+paramsFromState();
-    const code=`<iframe src="${src}" width="100%" height="760" style="border:0;max-width:980px" loading="lazy"></iframe>`;
-    try{ await navigator.clipboard.writeText(code); alert('<iframe> embed code copied!'); }catch(e){ prompt('Copy this embed code:', code); }
+
+  document.getElementById('emailResults').addEventListener('click', ()=>{
+    compute(); // ensure latest numbers
+    const userEmail = prompt("What email address should we send your results to?");
+    if(!userEmail) return;
+
+    // build email
+    const subject = encodeURIComponent("Email My Results: Move Up Calculator");
+    const body = encodeURIComponent(buildEmailBody(userEmail));
+
+    // mailto: to Jason, CC user
+    const to = encodeURIComponent("jason@jasonknashville.com");
+    const cc = encodeURIComponent(userEmail.trim());
+    const mailto = `mailto:${to}?cc=${cc}&subject=${subject}&body=${body}`;
+    window.location.href = mailto;
+
+    // GTM event for tracking
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: 'moveup_email_results_click',
+        email_entered: userEmail
+      });
+    }
   });
 
   applyStateFromParams();
